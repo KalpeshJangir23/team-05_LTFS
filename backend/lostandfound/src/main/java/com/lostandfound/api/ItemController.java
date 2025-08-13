@@ -72,7 +72,7 @@ public class ItemController {
             // Save the image locally
             // ✅ Use absolute permanent path
             if (image != null && !image.isEmpty()) {
-                String baseDir = "D:/aLntproject/team-05_LTFS/backend/lostandfound (1)/lostandfound/uploads"; // choose a safe location
+                String baseDir = "D:/aLntproject/team-05_LTFS/backend/lostandfound/uploads"; // choose a safe location
                 File uploadFolder = new File(baseDir);
                 if (!uploadFolder.exists()) {
                     uploadFolder.mkdirs(); // create folder if missing
@@ -124,7 +124,8 @@ public class ItemController {
     @GetMapping("/returned")
     public ResponseEntity<?> getReturnedItems() {
         try {
-            List<Item> items = itemRepo.findByTag("RETURNED");
+            List<Item> items = itemRepo.findByStatus(ItemStatus.RETURNED);
+
             if (items.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("No returned items found");
