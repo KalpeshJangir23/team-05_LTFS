@@ -1,16 +1,17 @@
-# lostnfound
+- login / signUp
+  - name
+  - email
+  - psNumber
+  - password
+  
+- found & Lost
+  - PS number (founder name)
+  - place
+  - date time 
+  - description
+  - image
+  - tags (item name , laptop bag ,  black , company name ) ex : Dell laptop bag
+  - handed to admin fiedl (verify backend)
+  - status
+  - type  
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
