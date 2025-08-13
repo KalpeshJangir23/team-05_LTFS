@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/theme.dart';
+import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/main/main_screen.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+   HomeScreen({super.key});
+
+  // Sample recently added items
+  final List<ItemModel> recentItems = [
+    ItemModel(
+      psid: "PS101",
+      title: "Black handbag",
+      place: "Student support",
+      tags: ["Bag", "Black", "Leather"],
+      description: "A black handbag found at the Student Support office.",
+      image: "",
+      type: "claimed",
+    ),
+    ItemModel(
+      psid: "PS102",
+      title: "Black headphone",
+      place: "Student activities",
+      tags: ["Electronics", "Headphones", "Black"],
+      description: "Wireless black headphones found at Student Activities hall.",
+      image: "",
+      type: "claimed",
+    ),
+     ItemModel(
+      psid: "PS103",
+      title: "Tea mug",
+      place: "BBS",
+      tags: ["Mug", "Ceramic", "White"],
+      description: "A ceramic tea mug left at BBS.",
+      image: "",
+      type: "unclaimed",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +54,9 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // Row with Lost and Found
             const SizedBox(height: 40),
+
+            // Lost & Found buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -33,7 +66,8 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const LostFoundForm(category: "lost"),
+                          builder: (_) =>
+                              const LostFoundForm(category: "lost"),
                         ),
                       );
                     },
@@ -88,44 +122,29 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 20),
 
-            // List of items (you can add later)
+            // Recently Added title
             Text(
               "Recently Added",
               style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 22),
-            ),
-            Expanded(
-              child: ListView(
-                children: const [
-                  ItemCard(
-                    icon: Icons.shopping_bag,
-                    title: "Black handbag",
-                    subtitle: "Student support",
-                    timeAgo: "5 hours ago",
-                    claimed: true,
-                  ),
-                  ItemCard(
-                    icon: Icons.headphones,
-                    title: "Black headphone",
-                    subtitle: "Student activities",
-                    timeAgo: "12 hours ago",
-                    claimed: true,
-                  ),
-                  ItemCard(
-                    icon: Icons.coffee,
-                    title: "Tea mug",
-                    subtitle: "BBS",
-                    timeAgo: "1 day ago",
-                    claimed: false,
-                  ),
-                ],
+                fontWeight: FontWeight.w600,
+                fontSize: 22,
               ),
             ),
 
-            const Spacer(),
-            // Button to navigate to main screen
+            // Recent items list
+            Expanded(
+              child: ListView.builder(
+                itemCount: recentItems.length,
+                itemBuilder: (context, index) {
+                  return ItemCard(item: recentItems[index]);
+                },
+              ),
+            ),
+
+            // Go to Main Screen button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

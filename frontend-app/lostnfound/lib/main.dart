@@ -31,7 +31,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp(
       title: 'Lost & Found',
       theme: AppTheme.lightTheme,
-      home: auth.isLoggedIn ? const HomeScreen() : LoginScreen(),
+      home: auth.isLoggedIn ?  HomeScreen() : LoginScreen(),
     );
   }
 }

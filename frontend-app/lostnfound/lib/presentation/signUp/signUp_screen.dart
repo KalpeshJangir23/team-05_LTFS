@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/inputDecoration.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/user_model.dart';
-
 import 'package:lostnfound/provider/auth_provider.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -15,6 +14,8 @@ class SignUpScreen extends ConsumerStatefulWidget {
 }
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _psNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -24,7 +25,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     ref.listen(authControllerProvider, (prev, next) {
       if (next.isLoggedIn) {
-        Navigator.pop(context); // go back to login or home
+        Navigator.pop(context); // Go back to login or home
       }
       if (next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -36,79 +37,151 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final auth = ref.watch(authControllerProvider);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-              TextField(
-                controller: _nameController,
-                decoration:
-                    AppInputDecoration.rounded(hintText: "Enter your name"),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _psNumberController,
-                decoration: AppInputDecoration.rounded(
-                    hintText: "Enter your PS number"),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration:
-                    AppInputDecoration.rounded(hintText: "Enter your email"),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                decoration:
-                    AppInputDecoration.rounded(hintText: "Enter your password"),
-                obscureText: true,
-              ),
-              const SizedBox(height: 40),
-              GestureDetector(
-                onTap: auth.loading
-                    ? null
-                    : () {
-                        final user = UserModel(
-                          psid: _psNumberController.text.trim(),
-                          email: _emailController.text.trim(),
-                          name: _nameController.text.trim(),
-                          isAdmin: false,
-                          password: _passwordController.text.trim(),
-                        );
-                        ref.read(authControllerProvider.notifier).signUp(user);
-                      },
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppTheme.containerLost,
-                    borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Top Image
+                  Image.asset(
+                    'assets/lost.jpg',
+                    height: 150,
+                    fit: BoxFit.contain,
                   ),
-                  child: auth.loading
-                      ? const CircularProgressIndicator()
-                      : Text(
-                          "Sign Up",
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                ),
+                  const SizedBox(height: 30),
+
+                  // Title
+                  Text(
+                    "Create Your Account",
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Name Field
+                  TextFormField(
+                    controller: _nameController,
+                    decoration:
+                        AppInputDecoration.rounded(hintText: "Enter your name"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // PS Number Field
+                  TextFormField(
+                    controller: _psNumberController,
+                    decoration: AppInputDecoration.rounded(
+                        hintText: "Enter your PS number"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "PS number is required";
+                      }
+                      if (value.length < 5) {
+                        return "PS number must be at least 5 characters";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Email Field
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: AppInputDecoration.rounded(
+                        hintText: "Enter your email"),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Email is required";
+                      }
+                      final emailRegex = RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      if (!emailRegex.hasMatch(value)) {
+                        return "Enter a valid email";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Password Field
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: AppInputDecoration.rounded(
+                        hintText: "Enter your password"),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Password is required";
+                      }
+                      if (value.length < 6) {
+                        return "Password must be at least 6 characters";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 40),
+
+                  // Sign Up Button
+                  GestureDetector(
+                    onTap: auth.loading
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              final user = UserModel(
+                                psid: _psNumberController.text.trim(),
+                                email: _emailController.text.trim(),
+                                name: _nameController.text.trim(),
+                                isAdmin: false,
+                                password: _passwordController.text.trim(),
+                              );
+                              ref
+                                  .read(authControllerProvider.notifier)
+                                  .signUp(user);
+                            }
+                          },
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppTheme.containerLost,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: auth.loading
+                          ? const CircularProgressIndicator()
+                          : Text(
+                              "Sign Up",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Already have an account
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "Already have an account? Login",
+                      style: TextStyle(color: AppTheme.containerLost),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  "Already have an account? Login",
-                  style: TextStyle(color: AppTheme.containerLost),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),

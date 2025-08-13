@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/inputDecoration.dart';
 import 'package:lostnfound/core/theme.dart';
+import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/Request/request_screen.dart';
-import 'package:lostnfound/presentation/profile/profile_screen.dart'
-    hide RequestScreen;
+import 'package:lostnfound/presentation/profile/profile_screen.dart' hide RequestScreen;
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,8 +17,71 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _lostSearchController = TextEditingController();
   final TextEditingController _foundSearchController = TextEditingController();
-  final TextEditingController _claimedSearchController =
-      TextEditingController();
+  final TextEditingController _claimedSearchController = TextEditingController();
+
+  // Sample static data (replace with API results later)
+  final List<ItemModel> lostItems = [
+    ItemModel(
+      psid: "PS101",
+      title: "Black handbag",
+      place: "Student support",
+      tags: ["Bag", "Black", "Leather"],
+      description: "A black handbag with leather finish found near Student Support.",
+      image: "",
+      type: "unclaimed",
+    ),
+    ItemModel(
+      psid: "PS102",
+      title: "Black headphone",
+      place: "Student activities",
+      tags: ["Electronics", "Black", "Wireless"],
+      description: "A wireless headphone left in Student Activities Hall.",
+      image: "",
+      type: "claimed",
+    ),
+  ];
+
+  final List<ItemModel> foundItems = [
+    ItemModel(
+      psid: "PS201",
+      title: "iPhone 13",
+      place: "Library",
+      tags: ["Phone", "Apple", "White"],
+      description: "White iPhone 13 found in the library reading area.",
+      image: "",
+      type: "unclaimed",
+    ),
+    ItemModel(
+      psid: "PS202",
+      title: "School backpack",
+      place: "Cafeteria",
+      tags: ["Bag", "School", "Blue"],
+      description: "A blue school backpack found in the cafeteria.",
+      image: "",
+      type: "claimed",
+    ),
+  ];
+
+  final List<ItemModel> claimedItems = [
+    ItemModel(
+      psid: "PS301",
+      title: "Black handbag",
+      place: "Claimed by Alice",
+      tags: ["Bag", "Black", "Leather"],
+      description: "Handbag was returned to Alice.",
+      image: "",
+      type: "claimed",
+    ),
+    ItemModel(
+      psid: "PS302",
+      title: "School backpack",
+      place: "Claimed by Bob",
+      tags: ["Bag", "School", "Blue"],
+      description: "Backpack was claimed by Bob.",
+      image: "",
+      type: "claimed",
+    ),
+  ];
 
   @override
   void dispose() {
@@ -66,7 +129,6 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
 
-        // Main tab views
         body: TabBarView(
           children: [
             // LOST tab
@@ -82,30 +144,11 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    children: const [
-                      ItemCard(
-                        icon: Icons.shopping_bag,
-                        title: "Black handbag",
-                        subtitle: "Student support",
-                        timeAgo: "5 hours ago",
-                        claimed: true,
-                      ),
-                      ItemCard(
-                        icon: Icons.headphones,
-                        title: "Black headphone",
-                        subtitle: "Student activities",
-                        timeAgo: "12 hours ago",
-                        claimed: true,
-                      ),
-                      ItemCard(
-                        icon: Icons.coffee,
-                        title: "Tea mug",
-                        subtitle: "BBS",
-                        timeAgo: "1 day ago",
-                        claimed: false,
-                      ),
-                    ],
+                  child: ListView.builder(
+                    itemCount: lostItems.length,
+                    itemBuilder: (context, index) {
+                      return ItemCard(item: lostItems[index]);
+                    },
                   ),
                 ),
               ],
@@ -124,23 +167,11 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    children: const [
-                      ItemCard(
-                        icon: Icons.phone_iphone,
-                        title: "iPhone 13",
-                        subtitle: "Library",
-                        timeAgo: "2 hours ago",
-                        claimed: false,
-                      ),
-                      ItemCard(
-                        icon: Icons.backpack,
-                        title: "School backpack",
-                        subtitle: "Cafeteria",
-                        timeAgo: "6 hours ago",
-                        claimed: true,
-                      ),
-                    ],
+                  child: ListView.builder(
+                    itemCount: foundItems.length,
+                    itemBuilder: (context, index) {
+                      return ItemCard(item: foundItems[index]);
+                    },
                   ),
                 ),
               ],
@@ -159,23 +190,11 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    children: const [
-                      ItemCard(
-                        icon: Icons.shopping_bag,
-                        title: "Black handbag",
-                        subtitle: "Claimed by Alice",
-                        timeAgo: "Yesterday",
-                        claimed: true,
-                      ),
-                      ItemCard(
-                        icon: Icons.backpack,
-                        title: "School backpack",
-                        subtitle: "Claimed by Bob",
-                        timeAgo: "2 days ago",
-                        claimed: true,
-                      ),
-                    ],
+                  child: ListView.builder(
+                    itemCount: claimedItems.length,
+                    itemBuilder: (context, index) {
+                      return ItemCard(item: claimedItems[index]);
+                    },
                   ),
                 ),
               ],
@@ -183,7 +202,6 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
 
-        // Floating center button
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppTheme.containerLost,
           onPressed: () {
@@ -196,7 +214,6 @@ class _MainScreenState extends State<MainScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-        // Bottom navigation bar
         bottomNavigationBar: const BottomAppBar(
           shape: CircularNotchedRectangle(),
           notchMargin: 8,
@@ -205,8 +222,8 @@ class _MainScreenState extends State<MainScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 48), // left space
-                SizedBox(width: 48), // right space
+                SizedBox(width: 48),
+                SizedBox(width: 48),
               ],
             ),
           ),
