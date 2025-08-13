@@ -17,18 +17,26 @@ public class Item {
     private String place;
     private LocalDateTime dateTime;
     private String description;
+    private String itemName;
 
-    @Lob // Store image as Base64 or URL
+    @Lob
     private String image;
 
     @ElementCollection
     private List<String> tags; // comma-separated tags like "laptop bag, black, Dell"
 
-    private boolean handedToAdmin; // true if admin verified
+    private boolean handedToAdmin = Boolean.TRUE ; // true if admin verified
 
     @Enumerated(EnumType.STRING)
     private ItemStatus status; // e.g., FOUND, RETURNED, LOST, etc.
 
     @Enumerated(EnumType.STRING)
     private ItemType type;   // LOST or FOUND
+
+    @Column(nullable = true)
+    private LocalDateTime returnedDate;
+
+    @Column(nullable = true)
+    private String returnedToPsid;
+
 }

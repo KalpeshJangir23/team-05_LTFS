@@ -23,6 +23,7 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
         user.setName(name);
+        user.setIsAdmin(false);
         userRepo.save(user);
         return jwtUtil.generateToken(psid);
     }
