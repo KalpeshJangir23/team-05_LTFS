@@ -13,5 +13,6 @@
   - tags (item name , laptop bag ,  black , company name ) ex : Dell laptop bag
   - handed to admin fiedl (verify backend)
   - status
-  - type  
+  - type
+  - itemname 
 
