@@ -33,7 +33,7 @@ class ItemCard extends StatelessWidget {
               claimed: claimed,
               description:
                   "This is a detailed description of the item. You can replace it with actual item data from the backend.",
-              tags: ["Laptop Bag", "Black", "Dell"],
+              tags: const ["Laptop Bag", "Black", "Dell"],
               location: subtitle,
             ),
           ),

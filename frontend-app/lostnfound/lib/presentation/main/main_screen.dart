@@ -197,14 +197,14 @@ class _MainScreenState extends State<MainScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
         // Bottom navigation bar
-        bottomNavigationBar: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
+        bottomNavigationBar: const BottomAppBar(
+          shape: CircularNotchedRectangle(),
           notchMargin: 8,
           child: SizedBox(
             height: 56,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 SizedBox(width: 48), // left space
                 SizedBox(width: 48), // right space
               ],
