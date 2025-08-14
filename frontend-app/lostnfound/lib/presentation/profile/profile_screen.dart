@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lostnfound/model/item_display_model.dart';
 import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
@@ -66,14 +67,17 @@ class ProfileScreen extends StatelessWidget {
                     _showItemOptions(context, item);
                   },
                   child: ItemCard(
-                    item: ItemModel(
+                    item: ItemDisplayModel(
                       psid: item["psid"],
                       title: item["title"],
+                      date_time: "",
+                      status: "",
                       place: item["place"],
-                      tags: List<String>.from(item["tags"]),
+                      tags: item["tags"],
                       description: item["description"],
                       image: item["image"],
-                      type: item["type"], // "claimed" or "unclaimed"
+                      type: item["type"],
+                      // "claimed" or "unclaimed"
                     ),
                   )),
             ),

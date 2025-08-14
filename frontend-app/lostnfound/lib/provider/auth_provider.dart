@@ -4,7 +4,6 @@ import 'package:lostnfound/services/auth/auth_repo.dart';
 import '../../core/secure_storage.dart';
 import '../../core/api_client.dart';
 
-
 class AuthState {
   final UserModel? user;
   final String? token;
@@ -30,8 +29,7 @@ final storageProvider = Provider<AppSecureStorage>((ref) => AppSecureStorage());
 // Change baseUrl to your API root, e.g., https://example.com/api/
 final apiClientProvider = Provider<ApiClient>(
   (ref) => ApiClient(
-      baseUrl: 'https://your-api-base-url.com/api/',
-      storage: ref.read(storageProvider)),
+      baseUrl: 'http://192.168.217.130:8080/', storage: ref.read(storageProvider)),
 );
 
 final authRepositoryProvider = Provider<AuthRepository>(
@@ -61,6 +59,9 @@ class AuthController extends StateNotifier<AuthState> {
       await storage.saveUser(user);
       state = AuthState(user: user, token: token, loading: false);
     } catch (e) {
+      print("======================");
+      print(e.toString());
+      print("======================");
       state = state.copyWith(loading: false, error: e.toString());
     }
   }

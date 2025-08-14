@@ -5,9 +5,13 @@ import 'package:lostnfound/presentation/home/home_screen.dart';
 import 'package:lostnfound/presentation/login/login_screen.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final container = ProviderContainer();
+  await container.read(authControllerProvider.notifier).loadSession();
+  runApp(UncontrolledProviderScope(container: container, child: MyApp()));
 }
+
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
@@ -31,7 +35,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp(
       title: 'Lost & Found',
       theme: AppTheme.lightTheme,
-      home: auth.isLoggedIn ?  HomeScreen() : LoginScreen(),
+      home: auth.isLoggedIn ?  HomeScreen() : const LoginScreen(),
     );
   }
 }

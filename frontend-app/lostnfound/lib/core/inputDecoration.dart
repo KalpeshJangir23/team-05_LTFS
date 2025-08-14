@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 class AppInputDecoration {
   static InputDecoration rounded({
     required String hintText,
+     String? labelText,
   }) {
     return InputDecoration(
       hintText: hintText,
+      labelText: labelText,
       hintStyle: const TextStyle(
         color: Colors.black,
         fontSize: 16,

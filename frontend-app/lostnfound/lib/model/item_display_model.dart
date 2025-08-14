@@ -2,7 +2,7 @@ class ItemDisplayModel {
   final String psid;
   final String title;
   final String place;
-  final List<dynamic> tags;
+  final String tags;
   final String description;
   final String image;
   final String type;

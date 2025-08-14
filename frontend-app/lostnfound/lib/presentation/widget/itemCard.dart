@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:lostnfound/model/item_display_model.dart';
 import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/widget/itemDetailsScreen.dart';
 
 class ItemCard extends StatelessWidget {
-  final ItemModel item;
+  final ItemDisplayModel item;
 
   const ItemCard({super.key, required this.item});
 
@@ -42,10 +45,19 @@ class ItemCard extends StatelessWidget {
               ),
               child: item.image.isNotEmpty
                   ? Image.network(
-                      item.image,
+                      // Ensure item.image has full URL
+                      item.image.startsWith('http')
+                          ? item.image
+                          : 'http://192.168.102.130:8080${item.image}',
                       height: 90,
                       width: 90,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 90,
+                        width: 90,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.image_not_supported, size: 40),
+                      ),
                     )
                   : Container(
                       height: 90,
@@ -80,19 +92,7 @@ class ItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 4,
-                      children: item.tags
-                          .take(2)
-                          .map((tag) => Chip(
-                                label: Text(tag.toString(),
-                                    style: const TextStyle(fontSize: 10)),
-                                backgroundColor: Colors.blue.shade50,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                              ))
-                          .toList(),
-                    ),
+                    //
                   ],
                 ),
               ),
@@ -101,8 +101,7 @@ class ItemCard extends StatelessWidget {
             // Status label
             Container(
               margin: const EdgeInsets.only(right: 12),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: item.type.toLowerCase() == "claimed"
                     ? Colors.green.shade50
@@ -110,9 +109,7 @@ class ItemCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                item.type.toLowerCase() == "claimed"
-                    ? "Claimed"
-                    : "Unclaimed",
+                item.type.toLowerCase() == "claimed" ? "Claimed" : "Unclaimed",
                 style: TextStyle(
                   fontSize: 12,
                   color: item.type.toLowerCase() == "claimed"

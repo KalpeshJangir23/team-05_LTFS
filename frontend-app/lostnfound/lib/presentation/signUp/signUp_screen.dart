@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/inputDecoration.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/user_model.dart';
+import 'package:lostnfound/presentation/home/home_screen.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -104,8 +105,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       if (value == null || value.trim().isEmpty) {
                         return "Email is required";
                       }
-                      final emailRegex = RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      final emailRegex =
+                          RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                       if (!emailRegex.hasMatch(value)) {
                         return "Enter a valid email";
                       }
@@ -117,8 +118,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
-                    decoration: AppInputDecoration.rounded(
-                        hintText: "Enter your password"),
+                      decoration: AppInputDecoration.rounded(
+                          hintText: "Enter your password"),
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -135,20 +136,41 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   // Sign Up Button
                   GestureDetector(
                     onTap: auth.loading
-                        ? null
-                        : () {
+                        ? 
+                          null
+                          : (){
                             if (_formKey.currentState!.validate()) {
                               final user = UserModel(
                                 psid: _psNumberController.text.trim(),
                                 email: _emailController.text.trim(),
                                 name: _nameController.text.trim(),
-                                isAdmin: false,
+                               // isAdmin: false,
                                 password: _passwordController.text.trim(),
                               );
                               ref
                                   .read(authControllerProvider.notifier)
                                   .signUp(user);
                             }
+                          
+                        // : () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => HomeScreen(),
+                        //       ),
+                        //     );
+                            // if (_formKey.currentState!.validate()) {
+                            //   final user = UserModel(
+                            //     psid: _psNumberController.text.trim(),
+                            //     email: _emailController.text.trim(),
+                            //     name: _nameController.text.trim(),
+                            //     isAdmin: false,
+                            //     password: _passwordController.text.trim(),
+                            //   );
+                            //   ref
+                            //       .read(authControllerProvider.notifier)
+                            //       .signUp(user);
+                            // }
                           },
                     child: Container(
                       padding: const EdgeInsets.all(16),

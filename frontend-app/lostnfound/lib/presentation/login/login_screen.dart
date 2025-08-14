@@ -45,6 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Image on top
                 Image.asset(
@@ -58,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextFormField(
                   controller: _psidController,
                   decoration:
-                      AppInputDecoration.rounded(hintText: "Enter your PSID"),
+                      AppInputDecoration.rounded(hintText: "Enter your PSID" , labelText: "PS ID"),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return "PSID is required";
@@ -75,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextFormField(
                   controller: _passController,
                   decoration: AppInputDecoration.rounded(
-                      hintText: "Enter your password"),
+                      hintText: "Enter your password", labelText: "Password"),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -133,7 +134,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: const Text(
                     "Create an account",
-                    style: TextStyle(color: AppTheme.containerLost),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ],

@@ -1,47 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/theme.dart';
+import 'package:lostnfound/model/item_display_model.dart';
 import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/main/main_screen.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
+import 'package:lostnfound/provider/item_provider.dart';
 
-class HomeScreen extends StatelessWidget {
-   HomeScreen({super.key});
-
-  // Sample recently added items
-  final List<ItemModel> recentItems = [
-    ItemModel(
-      psid: "PS101",
-      title: "Black handbag",
-      place: "Student support",
-      tags: ["Bag", "Black", "Leather"],
-      description: "A black handbag found at the Student Support office.",
-      image: "",
-      type: "claimed",
-    ),
-    ItemModel(
-      psid: "PS102",
-      title: "Black headphone",
-      place: "Student activities",
-      tags: ["Electronics", "Headphones", "Black"],
-      description: "Wireless black headphones found at Student Activities hall.",
-      image: "",
-      type: "claimed",
-    ),
-     ItemModel(
-      psid: "PS103",
-      title: "Tea mug",
-      place: "BBS",
-      tags: ["Mug", "Ceramic", "White"],
-      description: "A ceramic tea mug left at BBS.",
-      image: "",
-      type: "unclaimed",
-    ),
-  ];
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the provider for the item list
+    final itemsAsync = ref.watch(getItemsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -66,8 +41,7 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              const LostFoundForm(category: "lost"),
+                          builder: (_) => const LostFoundForm(category: "lost"),
                         ),
                       );
                     },
@@ -136,11 +110,34 @@ class HomeScreen extends StatelessWidget {
 
             // Recent items list
             Expanded(
-              child: ListView.builder(
-                itemCount: recentItems.length,
-                itemBuilder: (context, index) {
-                  return ItemCard(item: recentItems[index]);
+              child: itemsAsync.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return const Center(child: Text("No items found."));
+                  }
+                  return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return ItemCard(
+                        item: ItemDisplayModel(
+                          psid: items[index].psid,
+                          title: items[index].title,
+                          place: items[index].place,
+                          tags: items[index].tags,
+                          description: items[index].description,
+                          image: items[index].image,
+                          type: items[index].type,
+                          date_time: "",
+                          status: items[index].status,
+                        ),
+                      );
+                    },
+                  );
                 },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(
+                  child: Text("Error loading items: $err"),
+                ),
               ),
             ),
 

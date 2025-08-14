@@ -4,7 +4,8 @@ import 'package:lostnfound/core/inputDecoration.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/Request/request_screen.dart';
-import 'package:lostnfound/presentation/profile/profile_screen.dart' hide RequestScreen;
+import 'package:lostnfound/presentation/profile/profile_screen.dart'
+    hide RequestScreen;
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,7 +18,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _lostSearchController = TextEditingController();
   final TextEditingController _foundSearchController = TextEditingController();
-  final TextEditingController _claimedSearchController = TextEditingController();
+  final TextEditingController _claimedSearchController =
+      TextEditingController();
 
   // Sample static data (replace with API results later)
   final List<ItemModel> lostItems = [
@@ -25,8 +27,9 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS101",
       title: "Black handbag",
       place: "Student support",
-      tags: ["Bag", "Black", "Leather"],
-      description: "A black handbag with leather finish found near Student Support.",
+      tags: ["Bag", "Black", "Leather"].toString(),
+      description:
+          "A black handbag with leather finish found near Student Support.",
       image: "",
       type: "unclaimed",
     ),
@@ -34,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS102",
       title: "Black headphone",
       place: "Student activities",
-      tags: ["Electronics", "Black", "Wireless"],
+      tags: ["Electronics", "Black", "Wireless"].toString(),
       description: "A wireless headphone left in Student Activities Hall.",
       image: "",
       type: "claimed",
@@ -46,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS201",
       title: "iPhone 13",
       place: "Library",
-      tags: ["Phone", "Apple", "White"],
+      tags: ["Phone", "Apple", "White"].toString(),
       description: "White iPhone 13 found in the library reading area.",
       image: "",
       type: "unclaimed",
@@ -55,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS202",
       title: "School backpack",
       place: "Cafeteria",
-      tags: ["Bag", "School", "Blue"],
+      tags: ["Bag", "School", "Blue"].toString(),
       description: "A blue school backpack found in the cafeteria.",
       image: "",
       type: "claimed",
@@ -67,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS301",
       title: "Black handbag",
       place: "Claimed by Alice",
-      tags: ["Bag", "Black", "Leather"],
+      tags: ["Bag", "Black", "Leather"].toString(),
       description: "Handbag was returned to Alice.",
       image: "",
       type: "claimed",
@@ -76,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
       psid: "PS302",
       title: "School backpack",
       place: "Claimed by Bob",
-      tags: ["Bag", "School", "Blue"],
+      tags: ["Bag", "School", "Blue"].toString(),
       description: "Backpack was claimed by Bob.",
       image: "",
       type: "claimed",
@@ -128,7 +131,6 @@ class _MainScreenState extends State<MainScreen> {
             ],
           ),
         ),
-
         body: TabBarView(
           children: [
             // LOST tab
@@ -145,11 +147,10 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: lostItems.length,
-                    itemBuilder: (context, index) {
-                      return ItemCard(item: lostItems[index]);
-                    },
-                  ),
+                      itemCount: lostItems.length,
+                      itemBuilder: (context, index) {
+                        return SizedBox();
+                      }),
                 ),
               ],
             ),
@@ -166,14 +167,14 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: foundItems.length,
-                    itemBuilder: (context, index) {
-                      return ItemCard(item: foundItems[index]);
-                    },
-                  ),
-                ),
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: foundItems.length,
+                //     itemBuilder: (context, index) {
+                //       return ItemCard(item: foundItems[index]);
+                //     },
+                //   ),
+                // ),
               ],
             ),
 
@@ -189,19 +190,18 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: claimedItems.length,
-                    itemBuilder: (context, index) {
-                      return ItemCard(item: claimedItems[index]);
-                    },
-                  ),
-                ),
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: claimedItems.length,
+                //     itemBuilder: (context, index) {
+                //       return ItemCard(item: claimedItems[index]);
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ],
         ),
-
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppTheme.containerLost,
           onPressed: () {
@@ -213,7 +213,6 @@ class _MainScreenState extends State<MainScreen> {
           child: const Icon(Icons.add, color: Colors.black),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
         bottomNavigationBar: const BottomAppBar(
           shape: CircularNotchedRectangle(),
           notchMargin: 8,
