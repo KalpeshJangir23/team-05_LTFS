@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemRepository itemRepo;
     private final UserRepository userRepo;
+
     public ItemController(ItemRepository itemRepo, UserRepository userRepo) {
         this.itemRepo = itemRepo;
         this.userRepo = userRepo;
@@ -138,13 +140,138 @@ public class ItemController {
     }
 
 
+    // --- UPDATE item (only if uploader) ---
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateItem(
+            @PathVariable Long id,
+            @RequestParam String psid,
+            @RequestBody Map<String, Object> body) {
+        try {
+            Optional<Item> optionalItem = itemRepo.findById(id);
+            if (optionalItem.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Item not found");
+            }
+
+            Item existingItem = optionalItem.get();
+
+            // Only allow uploader to edit
+            if (!existingItem.getPsid().equals(psid)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("You are not authorized to edit this item");
+            }
+
+            // Update allowed fields
+            if (body.containsKey("place") && body.get("place") != null) {
+                existingItem.setPlace(body.get("place").toString());
+            }
+
+            if (body.containsKey("description") && body.get("description") != null) {
+                existingItem.setDescription(body.get("description").toString());
+            }
+
+            if (body.containsKey("itemName") && body.get("itemName") != null) {
+                existingItem.setItemName(body.get("itemName").toString());
+            }
+
+            if (body.containsKey("tags") && body.get("tags") != null) {
+                Object tagsObj = body.get("tags");
+                List<String> parsedTags;
+                if (tagsObj instanceof List) {
+                    parsedTags = ((List<?>) tagsObj).stream()
+                            .map(Object::toString)
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toList());
+                } else {
+                    // handle comma separated or JSON-style string
+                    String tagsStr = tagsObj.toString()
+                            .replace("[", "")
+                            .replace("]", "")
+                            .replace("\"", "");
+                    parsedTags = Arrays.stream(tagsStr.split(","))
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toList());
+                }
+                existingItem.setTags(parsedTags);
+            }
+
+
+            if (body.containsKey("status") && body.get("status") != null) {
+                try {
+                    String s = body.get("status").toString().trim().toUpperCase();
+                    existingItem.setStatus(ItemStatus.valueOf(s));
+                } catch (IllegalArgumentException ex) {
+                    return ResponseEntity.badRequest()
+                            .body("Invalid status. Allowed: " + Arrays.toString(ItemStatus.values()));
+                }
+            }
+
+            if (body.containsKey("type") && body.get("type") != null) {
+                try {
+                    String t = body.get("type").toString().trim().toUpperCase();
+                    existingItem.setType(ItemType.valueOf(t));
+                } catch (IllegalArgumentException ex) {
+                    return ResponseEntity.badRequest()
+                            .body("Invalid type. Allowed: " + Arrays.toString(ItemType.values()));
+                }
+            }
+
+//            // If the client sent returnedToPsid / returnedDate manually, allow update too:
+//            if (body.containsKey("returnedToPsid")) {
+//                Object r = body.get("returnedToPsid");
+//                existingItem.setReturnedToPsid(r == null ? null : r.toString());
+//            }
+//            if (body.containsKey("returnedDate") && body.get("returnedDate") != null) {
+//                // expecting ISO string; parse if provided (optionally you can add robust parsing)
+//                existingItem.setReturnedDate(LocalDateTime.parse(body.get("returnedDate").toString()));
+//            }
+
+            Item saved = itemRepo.save(existingItem);
+            return ResponseEntity.ok(saved);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating item: " + e.getMessage());
+        }
+    }
+
+    // --- DELETE item (only if uploader) ---
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteItem(
+            @PathVariable Long id,
+            @RequestParam String psid) {
+        try {
+            Optional<Item> optionalItem = itemRepo.findById(id);
+            if (optionalItem.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Item not found");
+            }
+
+            Item existingItem = optionalItem.get();
+
+            // Only allow uploader to delete
+            if (!existingItem.getPsid().equals(psid)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("You are not authorized to delete this item");
+            }
+
+            itemRepo.delete(existingItem);
+            return ResponseEntity.ok("Item deleted successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting item: " + e.getMessage());
+        }
+    }
 
     // --- PUT endpoint to update status (generic) ---
     @PutMapping("/{id}/status")
     @Transactional
     public ResponseEntity<?> updateStatus(@PathVariable Long id,
                                           @RequestBody Map<String, String> body) {
-        String psid =body.get("psid");
+        String psid = body.get("psid");
 
         // Get user from DB and check admin
         Optional<User> optUser = userRepo.findByPsid(psid);
