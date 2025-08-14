@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/items")
 public class ItemController {
@@ -46,12 +46,14 @@ public class ItemController {
             @RequestParam String type
     ) {
         try {
+
             Item item = new Item();
             item.setId(null);
             item.setPsid(psid);
             item.setPlace(place);
             item.setDescription(description);
             item.setItemName(itemName);
+            log.info("Creating item: psid={}, itemName={}, type={}", psid, itemName, type);
 
 
             // Parse tags string into List<String>
@@ -73,7 +75,7 @@ public class ItemController {
             // Save the image locally
             // ✅ Use absolute permanent path
             if (image != null && !image.isEmpty()) {
-                String baseDir = "D:/aLntproject/team-05_LTFS/backend/lostandfound/uploads"; // choose a safe location
+                String baseDir = "C:/team-05_LTFS/backend/lostandfound/uploads"; // choose a safe location
                 File uploadFolder = new File(baseDir);
                 if (!uploadFolder.exists()) {
                     uploadFolder.mkdirs(); // create folder if missing
