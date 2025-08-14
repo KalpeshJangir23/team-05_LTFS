@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
 
@@ -61,17 +62,20 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 8),
             ...postedItems.map(
               (item) => GestureDetector(
-                onLongPress: () {
-                  _showItemOptions(context, item);
-                },
-                child: ItemCard(
-                  icon: item["icon"],
-                  title: item["title"],
-                  subtitle: item["subtitle"],
-                  timeAgo: item["timeAgo"],
-                  claimed: item["claimed"],
-                ),
-              ),
+                  onLongPress: () {
+                    _showItemOptions(context, item);
+                  },
+                  child: ItemCard(
+                    item: ItemModel(
+                      psid: item["psid"],
+                      title: item["title"],
+                      place: item["place"],
+                      tags: List<String>.from(item["tags"]),
+                      description: item["description"],
+                      image: item["image"],
+                      type: item["type"], // "claimed" or "unclaimed"
+                    ),
+                  )),
             ),
           ],
         ),
