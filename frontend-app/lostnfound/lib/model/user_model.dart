@@ -14,11 +14,13 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        psid: json['psid'] as String,
-        email: json['email'] as String,
-        name: json['name'] as String,
-        isAdmin: (json['isAdmin'] as bool?) ?? false,
-        password: json['password'] as String? ?? '',
+        psid: json['psid']?.toString() ?? '',
+        email: json['email']?.toString() ?? '',
+        name: json['name']?.toString() ?? '',
+        isAdmin: json['is_admin'] != null
+            ? (json['is_admin'] == 1 || json['is_admin'] == true)
+            : (json['isAdmin'] ?? false),
+        password: json['password']?.toString() ?? '',
       );
 
   Map<String, dynamic> toJson() => {
