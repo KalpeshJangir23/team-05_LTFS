@@ -25,7 +25,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.isLoggedIn) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) =>  HomeScreen()),
+          MaterialPageRoute(builder: (_) =>  const HomeScreen()),
         );
       }
       if (next.error != null) {

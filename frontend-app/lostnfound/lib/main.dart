@@ -9,7 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final container = ProviderContainer();
   await container.read(authControllerProvider.notifier).loadSession();
-  runApp(UncontrolledProviderScope(container: container, child: MyApp()));
+  runApp(UncontrolledProviderScope(container: container, child: const MyApp()));
 }
 
 
@@ -35,7 +35,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return MaterialApp(
       title: 'Lost & Found',
       theme: AppTheme.lightTheme,
-      home: auth.isLoggedIn ?  HomeScreen() : const LoginScreen(),
+      home: auth.isLoggedIn ?  const HomeScreen() : const LoginScreen(),
     );
   }
 }

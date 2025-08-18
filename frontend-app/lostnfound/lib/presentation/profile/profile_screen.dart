@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lostnfound/model/item_display_model.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
 import 'package:lostnfound/provider/item_provider.dart';
@@ -13,7 +12,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
-    
+
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: const Text("Profile")),
@@ -56,18 +55,7 @@ class ProfileScreen extends ConsumerWidget {
 
                 return Column(
                   children: myItems.map((item) {
-                    return ItemCard(
-                        item: ItemDisplayModel(
-                      psid: item.psid ?? "",
-                      title: item.title ?? "",
-                      date_time: item.date_time ?? "",
-                      status: item.status ?? "",
-                      place: item.place ?? "",
-                      tags: item.tags ?? "",
-                      description: item.description ?? "",
-                      image: item.image ?? "",
-                      type: item.type ?? "",
-                    ));
+                    return ItemCard(item: item);
                   }).toList(),
                 );
               },

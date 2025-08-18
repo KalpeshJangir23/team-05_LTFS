@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/item_display_model.dart';
-import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/main/main_screen.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';
@@ -120,6 +119,7 @@ class HomeScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       return ItemCard(
                         item: ItemDisplayModel(
+                          id: items[index].id,
                           psid: items[index].psid,
                           title: items[index].title,
                           place: items[index].place,
@@ -127,7 +127,7 @@ class HomeScreen extends ConsumerWidget {
                           description: items[index].description,
                           image: items[index].image,
                           type: items[index].type,
-                          date_time: "",
+                          dateTime: "",
                           status: items[index].status,
                         ),
                       );
