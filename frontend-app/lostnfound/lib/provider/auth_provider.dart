@@ -29,7 +29,8 @@ final storageProvider = Provider<AppSecureStorage>((ref) => AppSecureStorage());
 // Change baseUrl to your API root, e.g., https://example.com/api/
 final apiClientProvider = Provider<ApiClient>(
   (ref) => ApiClient(
-      baseUrl: 'http://192.168.217.130:8080/', storage: ref.read(storageProvider)),
+      baseUrl: 'http://192.168.102.130:8080/',
+      storage: ref.read(storageProvider)),
 );
 
 final authRepositoryProvider = Provider<AuthRepository>(
@@ -44,6 +45,9 @@ class AuthController extends StateNotifier<AuthState> {
     final storage = ref.read(storageProvider);
     final token = await storage.readToken();
     final user = await storage.readUser();
+    print("=========veer========");
+    print(user?.psid);
+    print("=================");
     if (token != null && user != null) {
       state = AuthState(user: user, token: token, loading: false);
     }

@@ -7,7 +7,7 @@ class ItemDisplayModel {
   final String image;
   final String type;
   final String date_time;
-  final String status;
+  String status;
 
   ItemDisplayModel(
       {required this.psid,

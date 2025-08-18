@@ -13,7 +13,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
-
+    
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: const Text("Profile")),

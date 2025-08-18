@@ -68,7 +68,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration:
-                        AppInputDecoration.rounded(hintText: "Enter your name"),
+                        AppInputDecoration.rounded(hintText: "Enter your name" , labelText: "Name"),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return "Name is required";
@@ -82,7 +82,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   TextFormField(
                     controller: _psNumberController,
                     decoration: AppInputDecoration.rounded(
-                        hintText: "Enter your PS number"),
+                        hintText: "Enter your PS number" , labelText: "PS number"),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return "PS number is required";
@@ -98,7 +98,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   // Email Field
                   TextFormField(
                     controller: _emailController,
-                    decoration: AppInputDecoration.rounded(
+                    decoration: AppInputDecoration.rounded(labelText: "Email",
                         hintText: "Enter your email"),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
@@ -118,7 +118,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
-                      decoration: AppInputDecoration.rounded(
+                      decoration: AppInputDecoration.rounded(labelText: "Password",
                           hintText: "Enter your password"),
                     obscureText: true,
                     validator: (value) {
@@ -198,7 +198,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     onPressed: () => Navigator.pop(context),
                     child: const Text(
                       "Already have an account? Login",
-                      style: TextStyle(color: AppTheme.containerLost),
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ],

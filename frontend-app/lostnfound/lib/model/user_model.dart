@@ -17,8 +17,8 @@ class UserModel {
         psid: json['psid']?.toString() ?? '',
         email: json['email']?.toString() ?? '',
         name: json['name']?.toString() ?? '',
-        isAdmin: json['is_admin'] != null
-            ? (json['is_admin'] == 1 || json['is_admin'] == true)
+        isAdmin: json['isAdmin'] != null
+            ? (json['isAdmin'] == 1 || json['isAdmin'] == true)
             : (json['isAdmin'] ?? false),
         password: json['password']?.toString() ?? '',
       );

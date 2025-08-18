@@ -53,5 +53,3 @@ class AuthRepository {
     return (user, token);
   }
 }
-
-

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lostnfound/model/item_display_model.dart';
+import 'package:lostnfound/provider/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ItemDetailScreen extends StatefulWidget {
+class ItemDetailScreen extends ConsumerStatefulWidget {
   final ItemDisplayModel item;
 
-  const ItemDetailScreen({super.key, required this.item});
+  ItemDetailScreen({super.key, required this.item});
 
   @override
-  State<ItemDetailScreen> createState() => _ItemDetailScreenState();
+  ConsumerState<ItemDetailScreen> createState() => _ItemDetailScreenState();
 }
 
-class _ItemDetailScreenState extends State<ItemDetailScreen>
+class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -21,6 +23,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -206,6 +209,13 @@ Description: ${widget.item.description}''';
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+    final user = authState.user;
+    print("==============");
+    print(user.toString());
+    print("==============");
+    print(user?.isAdmin.toString());
+    print("==============");
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -231,7 +241,7 @@ Description: ${widget.item.description}''';
               // Image Section
               _buildImageSection(),
               const SizedBox(height: 20),
-              
+
               // Item Details Form
               _buildFormField(
                 label: 'Item Title',
@@ -239,35 +249,40 @@ Description: ${widget.item.description}''';
                 icon: Icons.label,
               ),
               const SizedBox(height: 16),
-              
+
               _buildFormField(
                 label: 'Location Found',
                 value: widget.item.place,
                 icon: Icons.location_on,
               ),
               const SizedBox(height: 16),
-              
+
               _buildFormField(
                 label: 'Item Type',
                 value: widget.item.type,
                 icon: Icons.category,
               ),
               const SizedBox(height: 16),
-              
-              _buildFormField(
-                label: 'Status',
-                value: widget.item.status,
-                icon: Icons.info,
-              ),
+
+              if (user?.isAdmin == 1) ...[
+                _buildStatusDropdown(),
+              ] else ...[
+                _buildFormField(
+                  label: 'Status',
+                  value: widget.item.status,
+                  icon: Icons.info,
+                ),
+              ],
               const SizedBox(height: 16),
-              
+              const SizedBox(height: 16),
+
               _buildFormField(
                 label: 'Date & Time Found',
                 value: widget.item.date_time,
                 icon: Icons.access_time,
               ),
               const SizedBox(height: 16),
-              
+
               // Tags section (if available)
               if (widget.item.tags.isNotEmpty)
                 Column(
@@ -280,11 +295,11 @@ Description: ${widget.item.description}''';
                     const SizedBox(height: 16),
                   ],
                 ),
-              
+
               // Description Section
               _buildDescriptionField(),
               const SizedBox(height: 24),
-              
+
               // Contact Button
               _buildContactButton(),
               const SizedBox(height: 20),
@@ -295,10 +310,84 @@ Description: ${widget.item.description}''';
     );
   }
 
+  Widget _buildStatusDropdown() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info, size: 20, color: Colors.deepPurple),
+              const SizedBox(width: 8),
+              Text(
+                'Status',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: widget.item.status?.isNotEmpty == true
+                ? widget.item.status
+                : 'LOST', // default value if null/empty
+            items: ['LOST', 'FOUND', 'RETURNED']
+                .map((status) => DropdownMenuItem(
+                      value: status,
+                      child: Text(status),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  widget.item.status = value; // ✅ fixed assignment
+                });
+                _updateStatusOnServer(value);
+              }
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey[50],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[200]!),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _updateStatusOnServer(String status) async {
+    // TODO: call your backend API to update status
+    // Example:
+    // await ApiService.updateItemStatus(widget.item.id, status);
+    _showSuccessSnackBar(context, 'Status updated to $status');
+  }
+
   Widget _buildImageSection() {
     return Container(
       width: double.infinity,
-      height: 200,
+      height: 600,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[300]!),
@@ -308,8 +397,10 @@ Description: ${widget.item.description}''';
         borderRadius: BorderRadius.circular(12),
         child: widget.item.image.isNotEmpty
             ? Image.network(
-                widget.item.image,
-                fit: BoxFit.cover,
+                widget.item.image.startsWith('http')
+                    ? widget.item.image
+                    : 'http://192.168.102.130:8080${widget.item.image}',
+                fit: BoxFit.fill,
                 width: double.infinity,
                 errorBuilder: (context, error, stackTrace) =>
                     _buildImagePlaceholder(),
@@ -332,8 +423,8 @@ Description: ${widget.item.description}''';
           : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.image_not_supported, 
-                     size: 60, color: Colors.grey[400]),
+                Icon(Icons.image_not_supported,
+                    size: 60, color: Colors.grey[400]),
                 const SizedBox(height: 8),
                 Text(
                   'No Image Available',
@@ -430,7 +521,8 @@ Description: ${widget.item.description}''';
           children: [
             Row(
               children: [
-                const Icon(Icons.description, size: 20, color: Colors.deepPurple),
+                const Icon(Icons.description,
+                    size: 20, color: Colors.deepPurple),
                 const SizedBox(width: 8),
                 Text(
                   'Description',
