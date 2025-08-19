@@ -5,13 +5,33 @@ import 'package:lostnfound/presentation/widget/itemCard.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
 import 'package:lostnfound/provider/item_provider.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load session when profile screen is opened
+    Future.microtask(() {
+      ref.read(authControllerProvider.notifier).loadSession();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
+
+    if (authState.loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (user == null) {
       return Scaffold(
@@ -20,13 +40,14 @@ class ProfileScreen extends ConsumerWidget {
       );
     }
 
-    // Use the items from getItemsProvider but only filter by user.psid
     final itemsAsync = ref.watch(getItemsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile",
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(
+          "Profile",
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
@@ -38,7 +59,9 @@ class ProfileScreen extends ConsumerWidget {
             Text(
               "My Posted Requests",
               style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 18),
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
             ),
             const SizedBox(height: 8),
             itemsAsync.when(
@@ -54,12 +77,13 @@ class ProfileScreen extends ConsumerWidget {
                 }
 
                 return Column(
-                  children: myItems.map((item) {
-                    return ItemCard(item: item);
-                  }).toList(),
+                  children: myItems
+                      .map((item) => ItemCard(item: item))
+                      .toList(),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(8),
                 child: Text("Failed to load items: $e"),
@@ -72,9 +96,12 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildProfileCard(user) {
-    String displayName = (user.name.isNotEmpty) ? user.name : "Not provided";
-    String displayEmail = (user.email.isNotEmpty) ? user.email : "Not provided";
-    String displayPsid = (user.psid.isNotEmpty) ? user.psid : "Not provided";
+    String displayName =
+        (user.name.isNotEmpty) ? user.name : "Not provided";
+    String displayEmail =
+        (user.email.isNotEmpty) ? user.email : "Not provided";
+    String displayPsid =
+        (user.psid.isNotEmpty) ? user.psid : "Not provided";
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
