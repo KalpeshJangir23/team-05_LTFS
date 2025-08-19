@@ -91,7 +91,29 @@ flutter build appbundle --release
 
 ## 📸 Demo
 
-App screenshots and demo video will be added here.
+- App screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/055d6c9c-9a71-4423-81c4-d0d04b9ea192" alt="Preview 01" width="250"/>
+  <img src="https://github.com/user-attachments/assets/e30bd232-d6f0-40b6-b8fc-6d508b60c72d" alt="Preview 02" width="250"/>
+  <img src="https://github.com/user-attachments/assets/56de51db-395d-4d68-9d8e-e27280e903fb" alt="Preview 03" width="250"/>
+  <img src="https://github.com/user-attachments/assets/8c37f920-0bc1-482d-a997-e0cb38d08181" alt="Preview 04" width="250"/>
+  <img src="https://github.com/user-attachments/assets/4734bd30-c7ef-404a-b79f-df2aa3dd5d71" alt="Preview 05" width="250"/>
+</p>
+
+- Admin access
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fb7c05a6-7d78-4e30-832c-95d732468de5" alt="Screenshot 04" width="250"/>
+  <img src="https://github.com/user-attachments/assets/54b5756a-e98a-4172-8be5-6e2a5b540464" alt="Screenshot 03" width="250"/>
+  <img src="https://github.com/user-attachments/assets/3b6339b3-1491-4b88-9db2-4db7ac4a7ac1" alt="Screenshot 02" width="250"/>
+  <img src="https://github.com/user-attachments/assets/82f6460c-6761-4adf-a82f-f95420f95f6c" alt="Screenshot 01" width="250"/>
+</p>
+
+- Video demonstration
+  
+  https://github.com/user-attachments/assets/f93ec43a-ac05-437b-87b2-e28ffe996257
+
 
 ## 📂 Folder Structure
 
