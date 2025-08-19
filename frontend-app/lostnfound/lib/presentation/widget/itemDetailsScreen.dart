@@ -269,7 +269,7 @@ Description: ${widget.item.description}''';
               ),
               const SizedBox(height: 16),
 
-              if (user?.isAdmin == 1) ...[
+              if (user?.isAdmin == true) ...[
                 _buildStatusDropdown(),
                 const SizedBox(height: 16),
                 ElevatedButton(
