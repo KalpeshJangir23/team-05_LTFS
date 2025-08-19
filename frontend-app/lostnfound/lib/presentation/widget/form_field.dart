@@ -158,6 +158,7 @@ class _LostFoundFormState extends ConsumerState<LostFoundForm> {
                     }
 
                     final item = ItemModel(
+                    
                       psid: _psidController.text.trim(),
                       title: _titleController.text.trim(),
                       place: _placeController.text.trim(),

@@ -20,3 +20,18 @@ final getItemsProvider = FutureProvider<List<ItemDisplayModel>>((ref) async {
   final repository = ref.read(itemRepositoryProvider);
   return repository.getItems();
 });
+
+// Provider for updating item status
+final updateItemStatusProvider =
+    FutureProvider.family<void, Map<String, dynamic>>((ref, params) async {
+  final repo = ref.read(itemRepositoryProvider);
+  await repo.updateItemStatus(
+    itemId: params['itemId'] as int,
+    psid: params['psid'] as String,
+    status: params['status'] as String,
+    returnedToPsid: params['returnedToPsid'] as String?,
+  );
+
+  // Refresh the items provider to update the UI
+  ref.invalidate(getItemsProvider);
+});

@@ -119,6 +119,7 @@ class HomeScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       return ItemCard(
                         item: ItemDisplayModel(
+                          id: items[index].id,
                           psid: items[index].psid,
                           title: items[index].title,
                           place: items[index].place,
@@ -126,7 +127,7 @@ class HomeScreen extends ConsumerWidget {
                           description: items[index].description,
                           image: items[index].image,
                           type: items[index].type,
-                          date_time: "",
+                          dateTime: "",
                           status: items[index].status,
                         ),
                       );

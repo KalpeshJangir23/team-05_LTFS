@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:lostnfound/model/user_model.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import '../../core/api_client.dart';
 
 class AuthRepository {
@@ -21,8 +22,11 @@ class AuthRepository {
       options: Options(contentType: Headers.formUrlEncodedContentType),
     );
 
-    final token = res.data as String; // backend returns plain token
-    return (user.copyWith(password: ''), token);
+    final token = res.data as String;
+
+    final newUser = userFromToken(token);
+
+    return (newUser, token);
   }
 
   // POST /login -> expects psid, password
@@ -41,15 +45,22 @@ class AuthRepository {
       options: Options(contentType: Headers.formUrlEncodedContentType),
     );
 
-    final token = res.data as String; // backend returns plain token
-    final user = UserModel(
-      psid: psid,
-      email: '', // not returned by backend, placeholder
-      name: '',
-      isAdmin: false,
-      password: '',
-    );
+    final token = res.data as String;
+
+    final user = userFromToken(token);
 
     return (user, token);
   }
+}
+
+UserModel userFromToken(String token) {
+  final Map<String, dynamic> decoded = JwtDecoder.decode(token);
+
+  return UserModel(
+    psid: decoded['psid']?.toString() ?? '',
+    email: decoded['email']?.toString() ?? '',
+    name: decoded['name']?.toString() ?? '',
+    isAdmin: decoded['isAdmin'] == true || decoded['isAdmin'] == 1,
+    password: '', // never store password in memory
+  );
 }

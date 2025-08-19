@@ -24,6 +24,7 @@ class ItemRepository {
         final data = response.data as List;
         return data
             .map((json) => ItemDisplayModel(
+                  id: json['id'],
                   psid: json['psid'].toString(),
                   title: json['itemName'] ?? '',
                   place: json['place'] ?? '',
@@ -31,7 +32,7 @@ class ItemRepository {
                   description: json['description'] ?? '',
                   image: json['image'] ?? '',
                   type: json['type'] ?? '',
-                  date_time: json['date_time'] ?? '',
+                  dateTime: json['dateTime'] ?? '',
                   status: json['status'] ?? '',
                 ))
             .toList();
@@ -98,6 +99,69 @@ class ItemRepository {
       }
     } catch (e) {
       print("Error posting item: $e");
+      rethrow;
+    }
+  }
+
+  // Update item status (Admin only)
+  Future<void> updateItemStatus({
+    required int itemId,
+    required String psid,
+    required String status,
+    String? returnedToPsid,
+  }) async {
+    try {
+      final body = {
+        'psid': psid,
+        'status': status,
+        if (returnedToPsid != null && returnedToPsid.isNotEmpty)
+          'returnedToPsid': returnedToPsid,
+      };
+
+      final response = await dio.put(
+        '/items/$itemId/status',
+        data: body,
+      );
+
+      if (response.statusCode == 200) {
+        print('Item status updated successfully!');
+      } else {
+        throw Exception('Failed to update item status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error updating item status: $e');
+      rethrow;
+    }
+  }
+
+
+    Future<void> updateItem(int id, String psid, Map<String, dynamic> updates) async {
+    try {
+      final response = await dio.put(
+        '/items/$id',
+        queryParameters: {'psid': psid},
+        data: updates,
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update item: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error updating item: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> deleteItem(int id, String psid) async {
+    try {
+      final response = await dio.delete(
+        '/items/$id',
+        queryParameters: {'psid': psid},
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete item: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error deleting item: $e");
       rethrow;
     }
   }

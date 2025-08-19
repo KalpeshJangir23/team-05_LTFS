@@ -26,7 +26,6 @@ class AuthState {
 
 final storageProvider = Provider<AppSecureStorage>((ref) => AppSecureStorage());
 
-// Change baseUrl to your API root, e.g., https://example.com/api/
 final apiClientProvider = Provider<ApiClient>(
   (ref) => ApiClient(
       baseUrl: 'http://192.168.102.130:8080/',

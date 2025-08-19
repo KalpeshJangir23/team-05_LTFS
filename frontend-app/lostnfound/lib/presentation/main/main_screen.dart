@@ -59,9 +59,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                     ),
                   );
                 } else {
-                  // Optional: show a message if user is not logged in
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('User not logged in')),
+                    const SnackBar(
+                        content: Text('Please log in to view profile')),
                   );
                 }
               },
@@ -81,8 +81,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 items.where((i) => i.type.toLowerCase() == 'lost').toList();
             final foundItems =
                 items.where((i) => i.type.toLowerCase() == 'found').toList();
-            final claimedItems =
-                items.where((i) => i.type.toLowerCase() == 'claimed').toList();
+            final claimedItems = items
+                .where((i) => i.status.toLowerCase() == 'returned')
+                .toList();
 
             return TabBarView(
               children: [
@@ -118,10 +119,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Widget buildItemList(List<ItemDisplayModel> items,
       TextEditingController controller, String type) {
-    final filteredItems = items
-        .where((item) =>
-            item.title.toLowerCase().contains(controller.text.toLowerCase()))
-        .toList();
+    final query = controller.text.trim().toLowerCase();
+    final filteredItems = items.where((item) {
+      final titleMatch = item.title.toLowerCase().contains(query);
+      final tagsMatch = item.tags.toLowerCase().contains(query);
+      return titleMatch || tagsMatch;
+    }).toList();
 
     return Column(
       children: [
@@ -130,19 +133,30 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           child: TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: "Search $type Items...",
+              hintText: "Search $type Items by title or tags...",
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              prefixIcon: const Icon(Icons.search),
             ),
             onChanged: (query) => setState(() {}),
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: filteredItems.length,
-            itemBuilder: (context, index) =>
-                ItemCard(item: filteredItems[index]),
-          ),
+          child: filteredItems.isEmpty
+              ? Center(
+                  child: Text(
+                    'No $type items found',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: filteredItems.length,
+                  itemBuilder: (context, index) =>
+                      ItemCard(item: filteredItems[index]),
+                ),
         ),
       ],
     );

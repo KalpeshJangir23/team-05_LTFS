@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lostnfound/model/item_display_model.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
+import 'package:lostnfound/provider/item_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ItemDetailScreen extends ConsumerStatefulWidget {
@@ -19,11 +20,14 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   bool _isLoading = false;
+  String? _selectedStatus;
+  String? _returnedToPsid;
+  final _returnedToPsidController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
+    _selectedStatus = widget.item.status;
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -41,6 +45,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _returnedToPsidController.dispose();
     super.dispose();
   }
 
@@ -58,7 +63,7 @@ I believe the following item belongs to me:
 Title: ${widget.item.title}
 Location: ${widget.item.place}
 Type: ${widget.item.type}
-Date Found: ${widget.item.date_time}
+Date Found: ${widget.item.dateTime}
 Description: ${widget.item.description}
 
 Please assist me in claiming this item. I can provide additional verification if needed.
@@ -137,7 +142,7 @@ Best regards''';
 Title: ${widget.item.title}
 Location: ${widget.item.place}
 Type: ${widget.item.type}
-Date: ${widget.item.date_time}
+Date: ${widget.item.dateTime}
 Description: ${widget.item.description}''';
                   Clipboard.setData(ClipboardData(text: details));
                   Navigator.pop(context);
@@ -264,8 +269,63 @@ Description: ${widget.item.description}''';
               ),
               const SizedBox(height: 16),
 
-              if (user?.isAdmin == 1) ...[
+              if (user?.isAdmin == true) ...[
                 _buildStatusDropdown(),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (user == null || _selectedStatus == null) return;
+
+                          setState(() => _isLoading = true);
+
+                          try {
+                            await ref.read(updateItemStatusProvider({
+                              'itemId': widget.item.id, // Use item.id
+                              'psid': user.psid,
+                              'status': _selectedStatus!,
+                              'returnedToPsid': _selectedStatus == 'RETURNED'
+                                  ? _returnedToPsidController.text.trim()
+                                  : null,
+                            }).future);
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Status updated successfully'),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update: $e')),
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text('Submit'),
+                ),
               ] else ...[
                 _buildFormField(
                   label: 'Status',
@@ -274,11 +334,10 @@ Description: ${widget.item.description}''';
                 ),
               ],
               const SizedBox(height: 16),
-              const SizedBox(height: 16),
 
               _buildFormField(
                 label: 'Date & Time Found',
-                value: widget.item.date_time,
+                value: widget.item.dateTime,
                 icon: Icons.access_time,
               ),
               const SizedBox(height: 16),
@@ -311,6 +370,8 @@ Description: ${widget.item.description}''';
   }
 
   Widget _buildStatusDropdown() {
+    // Align with backend ItemStatus enum
+    const statuses = ['REPORTED', 'LOST', 'FOUND', 'RETURNED'];
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -346,10 +407,8 @@ Description: ${widget.item.description}''';
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: widget.item.status.isNotEmpty == true
-                ? widget.item.status
-                : 'LOST', // default value if null/empty
-            items: ['LOST', 'FOUND', 'RETURNED']
+            value: _selectedStatus,
+            items: statuses
                 .map((status) => DropdownMenuItem(
                       value: status,
                       child: Text(status),
@@ -358,9 +417,8 @@ Description: ${widget.item.description}''';
             onChanged: (value) {
               if (value != null) {
                 setState(() {
-                  widget.item.status = value; // ✅ fixed assignment
+                  _selectedStatus = value; // Update local state
                 });
-                _updateStatusOnServer(value);
               }
             },
             decoration: InputDecoration(
@@ -371,45 +429,55 @@ Description: ${widget.item.description}''';
                 borderSide: BorderSide(color: Colors.grey[200]!),
               ),
             ),
-          )
+          ),
+          if (_selectedStatus == 'RETURNED') ...[
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _returnedToPsidController,
+              decoration: InputDecoration(
+                labelText: 'Returned To PSID (Optional)',
+                filled: true,
+                fillColor: Colors.grey[50],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey[200]!),
+                ),
+                prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  void _updateStatusOnServer(String status) async {
-    // TODO: call your backend API to update status
-    // Example:
-    // await ApiService.updateItemStatus(widget.item.id, status);
-    _showSuccessSnackBar(context, 'Status updated to $status');
-  }
-
   Widget _buildImageSection() {
-    return Container(
-      width: double.infinity,
-      height: 600,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-        color: Colors.white,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: widget.item.image.isNotEmpty
-            ? Image.network(
-                widget.item.image.startsWith('http')
-                    ? widget.item.image
-                    : 'http://192.168.102.130:8080${widget.item.image}',
-                fit: BoxFit.fill,
-                width: double.infinity,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildImagePlaceholder(),
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return _buildImagePlaceholder(showLoading: true);
-                },
-              )
-            : _buildImagePlaceholder(),
+    return AspectRatio(
+      aspectRatio: 16 / 9, // ✅ keeps image in 16:9 ratio
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[300]!),
+          color: Colors.white,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: widget.item.image.isNotEmpty
+              ? Image.network(
+                  widget.item.image.startsWith('http')
+                      ? widget.item.image
+                      : 'http://192.168.102.130:8080${widget.item.image}',
+                  fit: BoxFit.cover, // ✅ keeps aspect ratio while filling
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) =>
+                      _buildImagePlaceholder(),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return _buildImagePlaceholder(showLoading: true);
+                  },
+                )
+              : _buildImagePlaceholder(),
+        ),
       ),
     );
   }
@@ -607,7 +675,7 @@ Description: ${widget.item.description}''';
 
 Location: ${widget.item.place}
 Type: ${widget.item.type}
-Date: ${widget.item.date_time}
+Date: ${widget.item.dateTime}
 
 Description: ${widget.item.description}
 
