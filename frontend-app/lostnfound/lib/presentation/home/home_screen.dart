@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/item_display_model.dart';
-import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/main/main_screen.dart';
 import 'package:lostnfound/presentation/widget/form_field.dart';
 import 'package:lostnfound/presentation/widget/itemCard.dart';

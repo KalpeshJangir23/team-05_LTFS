@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lostnfound/model/item_display_model.dart';
-import 'package:lostnfound/model/item_model.dart';
 import 'package:lostnfound/presentation/widget/itemDetailsScreen.dart';
 
 class ItemCard extends StatelessWidget {

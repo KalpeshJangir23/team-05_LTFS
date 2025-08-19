@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ItemDetailScreen extends ConsumerStatefulWidget {
   final ItemDisplayModel item;
 
-  ItemDetailScreen({super.key, required this.item});
+  const ItemDetailScreen({super.key, required this.item});
 
   @override
   ConsumerState<ItemDetailScreen> createState() => _ItemDetailScreenState();
@@ -49,7 +49,7 @@ class _ItemDetailScreenState extends ConsumerState<ItemDetailScreen>
     setState(() => _isLoading = true);
 
     try {
-      final email = 'admin@lostnfoundLTFD.com';
+      const email = 'admin@lostnfoundLTFD.com';
       final subject = 'Claiming Lost Item: ${widget.item.title}';
       final body = '''Hello,
 
@@ -346,7 +346,7 @@ Description: ${widget.item.description}''';
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: widget.item.status?.isNotEmpty == true
+            value: widget.item.status.isNotEmpty == true
                 ? widget.item.status
                 : 'LOST', // default value if null/empty
             items: ['LOST', 'FOUND', 'RETURNED']

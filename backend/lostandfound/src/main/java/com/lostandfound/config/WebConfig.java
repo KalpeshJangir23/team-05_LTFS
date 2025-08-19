@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     // Recommended: keep path in application.properties and inject it here
-    @Value("${app.upload.dir:D:/aLntproject/team-05_LTFS/backend/lostandfound/uploads/}")
+    @Value("${app.upload.dir:C:/team-05_LTFS/backend/lostandfound/uploads/}")
     private String uploadDir;
 
     @Override

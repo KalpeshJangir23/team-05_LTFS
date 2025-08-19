@@ -27,9 +27,12 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String psid) {
+    public String generateToken(String psid, String name, String email, Boolean isAdmin) {
         return Jwts.builder()
                 .setSubject(psid)
+                .claim("email", email)
+                .claim("name", name)
+                .claim("isAdmin", isAdmin)
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();

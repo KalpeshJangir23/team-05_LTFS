@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lostnfound/core/inputDecoration.dart';
 import 'package:lostnfound/core/theme.dart';
 import 'package:lostnfound/model/user_model.dart';
-import 'package:lostnfound/presentation/home/home_screen.dart';
 import 'package:lostnfound/provider/auth_provider.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
